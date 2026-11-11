@@ -26,6 +26,8 @@ export function createAudio() {
       const s = ctx.createBufferSource(), g = ctx.createGain()
       s.buffer = buffers[name]
       s.loop = true
+      s.loopStart = .03
+      s.loopEnd = Math.max(.1, buffers[name].duration - .03)
       g.gain.value = volume
       s.connect(g).connect(bed)
       s.start()

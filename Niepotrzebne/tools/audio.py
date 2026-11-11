@@ -40,7 +40,19 @@ for name, (sid, start, dur) in PICKS.items():
     manifest[name] = {'freesound': sid, 'author': m.get('user', ''), 'title': m.get('title', ''), 'url': f'https://freesound.org/s/{sid}/', 'license': 'CC0'}
     credits.append(f"| `{name}.mp3` | {m.get('title', '')} | {m.get('user', '')} | https://freesound.org/s/{sid}/ |")
     print(name, sid, round(os.path.getsize(os.path.join(OUT, name + '.mp3')) / 1000), 'kB')
+MUSIC = '654167'
+msrc = os.path.join(ROOT, 'Niepotrzebne', 'muzyka-src', MUSIC + '.mp3')
+if os.path.exists(msrc):
+    probe = subprocess.run(['ffmpeg', '-v', 'info', '-i', msrc, '-af', 'volumedetect', '-f', 'null', '-'], capture_output=True, text=True).stderr
+    gain = min(-2 - float(re.search(r'max_volume: (-?[\d.]+) dB', probe).group(1)), -22 - float(re.search(r'mean_volume: (-?[\d.]+) dB', probe).group(1)))
+    r = subprocess.run(['nice', '-n', '10', 'ffmpeg', '-v', 'error', '-y', '-i', msrc, '-af', f'volume={gain:.1f}dB', '-ac', '1', '-ar', '44100', '-c:a', 'libmp3lame', '-b:a', '96k', os.path.join(OUT, 'muzyka.mp3')], capture_output=True, text=True)
+    cand = {c['id']: c for c in json.load(open(os.path.join(ROOT, 'Niepotrzebne', 'muzyka-src', 'kandydaci.json')))}.get(MUSIC, {})
+    if not r.returncode:
+        manifest['muzyka'] = {'freesound': MUSIC, 'author': cand.get('author', ''), 'title': cand.get('name', ''), 'url': f'https://freesound.org/s/{MUSIC}/', 'license': 'CC0'}
+        credits.append(f"| `muzyka.mp3` | {cand.get('name', '')} | {cand.get('author', '')} | https://freesound.org/s/{MUSIC}/ |")
+        print('muzyka', MUSIC, round(os.path.getsize(os.path.join(OUT, 'muzyka.mp3')) / 1000), 'kB')
 if meta:
     json.dump(manifest, open(os.path.join(OUT, 'manifest.json'), 'w'), ensure_ascii=False, indent=1)
     open(os.path.join(OUT, 'CREDITS.md'), 'w').write('# Sound credits\n\nAll sounds are real recordings from freesound.org released under Creative Commons 0. Cut, levelled and converted to MP3 for the game.\n\n| File | Original title | Author | Source |\n|---|---|---|---|\n' + '\n'.join(credits) + '\n')
-    shutil.copy2(os.path.join(RAW, 'index.json'), os.path.join(KEEP, 'index.json'))
+    if os.path.abspath(RAW) != os.path.abspath(KEEP):
+        shutil.copy2(os.path.join(RAW, 'index.json'), os.path.join(KEEP, 'index.json'))
