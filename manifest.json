@@ -1,0 +1,11 @@
+{
+  "name": "Imperium Gzowiańskie",
+  "short_name": "Imperium",
+  "start_url": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#ffd9a0",
+  "theme_color": "#e2531b",
+  "lang": "pl",
+  "icons": [{ "src": "assets/icon-app.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
