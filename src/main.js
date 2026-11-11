@@ -6,6 +6,7 @@ import { createWorld, PAWN_LIST } from './view/world.js'
 import { createHost, SYSTEM, TOOLS } from './host/host.js'
 import { createLive } from './host/live.js'
 import { createMotion } from './sense/motion.js'
+import { createAudio } from './audio.js'
 import { CONFIG } from './config.js'
 
 const $ = s => document.querySelector(s)
@@ -18,6 +19,9 @@ const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ
 
 let S = null, busy = false, live = null, voiceOn = false, paused = false, lastRate = RULES.gzmStart, handoverDone = null, picking = false
 const world = createWorld($('#gl'))
+const audio = createAudio()
+const CARD_SOUND = { koza: 'goat', waldek: 'digger', beethoven: 'cat', dropsik: 'dog', major: 'saw', helikopter: 'heli', orange: 'rocket', grad: 'hail', saperzy: 'digger' }
+const EVENT_SOUND = { bought: 'register', pay: 'coins', gain: 'coins', lap: 'coins', built: 'hammer', cut: 'saw', hail: 'hail', trap: 'boom', blocked: 'cat', stolenCard: 'dog', bankrupt: 'fail', over: 'fanfare', market: 'coins', trade: 'register', stolenPlace: 'register' }
 const host = createHost({ lineEl: $('#line'), octoEl: $('#octo'), state: () => S })
 const motion = createMotion({
   onShake: () => { if (ready() && !S.rolled) actions.roll() },
@@ -62,12 +66,14 @@ function refresh() {
 
 function animate(e) {
   const run = fn => Promise.race([new Promise(fn), wait(2600)])
-  if (e.t === 'roll') return run(r => world.rollDice(e.dice, r)).then(() => wait(350))
+  if (e.t === 'roll') { audio.play('dice'); return run(r => world.rollDice(e.dice, r)).then(() => wait(350)) }
   if (e.t === 'move') {
     const path = [], n = FIELDS.length, dir = e.steps > 0 ? 1 : -1
     for (let i = e.from; i !== e.to;) { i = ((i + dir) % n + n) % n; path.push(i) }
+    path.forEach((f, k) => audio.play('hop', { delay: k * .17 + .12, rate: .9 + Math.random() * .25, volume: .55 }))
     return run(r => world.movePawn(e.player, path, r))
   }
+  if (e.t === 'fly') audio.play('heli', { volume: .8 })
   if (e.t === 'fly' || e.t === 'swap') return run(r => e.t === 'fly' ? world.flyPawn(e.player, e.to, r) : (world.sync(S), r()))
   return null
 }
@@ -75,7 +81,7 @@ function animate(e) {
 function handover(p) {
   return new Promise(resolve => {
     const v = sheet(`<p class="k" style="margin:0 0 6px;letter-spacing:.09em;text-transform:uppercase;font-size:14px;font-weight:700;color:var(--mute)">Podaj tablet</p><h2 class="title" style="display:flex;align-items:center;gap:18px"><i style="width:.7em;height:.7em;border-radius:50%;background:${p.color};display:inline-block"></i>${esc(p.name)}</h2><p class="sub">Runda ${Math.min(S.round, S.rounds)} z ${S.rounds}. Na koncie ${szyszki(p.money)} szyszek.</p><div class="row"><button class="btn go" id="go">Zaczynam turę</button></div>`, { solid: true })
-    handoverDone = () => { handoverDone = null; closeSheet(); resolve() }
+    handoverDone = () => { handoverDone = null; audio.play('bell', { volume: .7 }); closeSheet(); resolve() }
     $('#go').onclick = handoverDone
     v.dataset.kind = 'handover'
   })
@@ -89,7 +95,12 @@ async function play(events, { quiet = false } = {}) {
   refresh()
   const at = events.findIndex(e => e.t === 'turn')
   const first = at < 0 ? events : events.slice(0, at), rest = at < 0 ? [] : events.slice(at)
-  for (const e of first) { const a = animate(e); if (a) await a }
+  for (const e of first) {
+    const a = animate(e)
+    if (a) await a
+    const snd = e.t === 'card' ? CARD_SOUND[e.card] : e.t === 'launch' ? (e.success ? 'chime' : 'fail') : e.t === 'built' && e.free ? 'digger' : EVENT_SOUND[e.t]
+    if (snd) audio.play(snd, { volume: e.t === 'pay' || e.t === 'gain' ? .7 : 1 })
+  }
   world.sync(S)
   const said = host.narrate(first, { quiet })
   refresh()
@@ -124,6 +135,7 @@ function rocketGame() {
   return new Promise(resolve => {
     sheet(`<h2>Start rakiety</h2><p>Trzymaj rakietę między liniami. Przechylaj tablet albo przesuwaj palcem.</p><canvas id="rocket" width="620" height="420"></canvas>`, { wide: true })
     const c = $('#rocket'), x = c.getContext('2d'), W = c.width, Hh = c.height
+    audio.play('rocket', { volume: .9 })
     let pos = 0, vel = 0, t = 0, last = performance.now(), ptr = null, gust = 0, gustT = 0, done = false
     c.onpointermove = e => { const r = c.getBoundingClientRect(); ptr = ((e.clientX - r.left) / r.width - .5) * 2 }
     c.onpointerdown = c.onpointermove
@@ -200,12 +212,13 @@ async function openPending() {
       opened = true
       const pk = $('#pk'), cs = $('#cs'), rw = $('#rw'), take = $('#take')
       pk.classList.add('shake')
+      audio.play('tear')
       await wait(520)
       pk.hidden = true
       cs.hidden = false
       const tip = layer.querySelector('.sheet p')
       if (tip) tip.textContent = 'W środku:'
-      for (const id of pd.cards) { cs.insertAdjacentHTML('beforeend', cardHTML(id).replace('class="card', 'class="card flip')); await wait(480) }
+      for (const id of pd.cards) { cs.insertAdjacentHTML('beforeend', cardHTML(id).replace('class="card', 'class="card flip')); audio.play(cardById[id].rarity === 'legendarna' ? 'chime' : 'flip'); await wait(480) }
       rw.hidden = false
       take.onclick = () => act(E.decide(S, {}))
     }
@@ -344,7 +357,7 @@ function connectVoice(code) {
   live = createLive({
     url: `${CONFIG.relay}?code=${encodeURIComponent(code)}`, model: CONFIG.model, voice: CONFIG.voice, system: SYSTEM, tools: TOOLS,
     onTool: tool,
-    onSpeaking: on => host.speaking(on),
+    onSpeaking: on => { host.speaking(on); audio.duck(on) },
     onTranscript: (who, text) => { if (who === 'host' && text.trim()) host.show(text.trim()) },
     onState: (st, why) => {
       if (st === 'ready') { host.online(true); $('#mic').hidden = false; setPaused(false); if (S && S.started) live.sendText(`[GRA] Połączenie wróciło. Teraz tura: ${E.cur(S).name}. Powiedz jedno krótkie zdanie na powitanie.`) }
@@ -410,6 +423,6 @@ $('#bTrade').onclick = actions.trade
 const mic = $('#mic')
 mic.onpointerdown = e => { e.preventDefault(); mic.setPointerCapture(e.pointerId); mic.classList.add('on'); mic.textContent = 'Słucham'; live && live.talkStart() }
 mic.onpointerup = mic.onpointercancel = () => { mic.classList.remove('on'); mic.textContent = 'Mów'; live && live.talkEnd() }
-addEventListener('pointerdown', () => live && live.unlock(), { passive: true })
+addEventListener('pointerdown', e => { audio.unlock(); if (live) live.unlock(); if (e.target.closest && e.target.closest('button')) audio.play('click', { volume: .5 }) }, { passive: true })
 window.__game = { state: () => S, E, act, tool, actions, world }
 setup()
