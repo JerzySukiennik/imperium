@@ -1,0 +1,376 @@
+<!doctype html>
+<!-- Imperium Gzowianskie: five art-direction variants of the isometric plot with sample game UI, for Jurek to pick one. -->
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Imperium Gzowiańskie · warianty wyglądu</title>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.170.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.170.0/examples/jsm/"}}</script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:#141414;font:16px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+main{max-width:1240px;margin:0 auto;padding:40px 24px 80px}
+.k{font-size:12.5px;letter-spacing:.09em;text-transform:uppercase;color:#73726c;margin:0}
+h1{font:700 clamp(32px,5vw,52px)/1.02 -apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;letter-spacing:-.03em;margin:8px 0 10px}
+.lead{font-size:17px;color:#3a3a37;margin:0 0 22px;max-width:46em}
+#stage{position:relative;width:100%;aspect-ratio:16/10;border-radius:22px;overflow:hidden;background:var(--bg);touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+#stage:active{cursor:grabbing}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ui{position:absolute;pointer-events:none;font-family:var(--font);color:var(--ink)}
+.chip{left:2.2%;top:3.4%;display:flex;align-items:center;gap:.7em;background:var(--panel);border:var(--border);border-radius:var(--r);padding:.55em .95em;box-shadow:var(--shadow);font-size:clamp(11px,1.35vw,17px)}
+.chip i{width:1.5em;height:1.5em;border-radius:50%;background:#e23b2e;border:.18em solid var(--panel);box-shadow:0 0 0 .12em var(--ink)}
+.chip b{font-weight:var(--bold);letter-spacing:var(--ls)}
+.chip span{opacity:.72}
+.rate{right:2.2%;top:3.4%;background:var(--panel);border:var(--border);border-radius:var(--r);padding:.55em .95em;box-shadow:var(--shadow);font-size:clamp(11px,1.25vw,16px);font-weight:var(--bold);letter-spacing:var(--ls)}
+.rate em{font-style:normal;color:var(--acc);margin-left:.5em}
+.host{left:2.2%;bottom:4%;display:flex;align-items:flex-end;gap:.8em;max-width:46%}
+.octo{flex:none;width:clamp(44px,6.4vw,84px);height:clamp(44px,6.4vw,84px);border-radius:var(--ro);background:var(--octobg);border:var(--border);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center}
+.octo svg{width:76%;height:76%}
+.say{background:var(--panel);border:var(--border);border-radius:var(--r);padding:.7em 1em;box-shadow:var(--shadow);font-size:clamp(11px,1.3vw,16.5px);line-height:1.35}
+.say small{display:block;font-size:.72em;letter-spacing:.09em;text-transform:uppercase;opacity:.6;margin-bottom:.2em}
+.card{right:2.2%;bottom:4%;width:clamp(120px,17.5vw,224px);background:var(--card);border:var(--border);border-radius:var(--rc);box-shadow:var(--shadowc);padding:.55em .55em .7em;transform:rotate(3deg);font-size:clamp(9.5px,1.12vw,14.5px)}
+.card img{display:block;width:100%;aspect-ratio:4/3.3;object-fit:cover;object-position:50% 30%;border-radius:calc(var(--rc) * .55);filter:var(--photo)}
+.card .t{display:flex;justify-content:space-between;align-items:baseline;gap:.4em;margin:.5em .15em .1em}
+.card .t b{font-weight:var(--bold);font-size:1.12em;letter-spacing:var(--ls)}
+.card .t u{text-decoration:none;font-size:.68em;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);font-weight:700;white-space:nowrap}
+.card p{margin:0 .15em;opacity:.78;line-height:1.3}
+#thumbs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:16px}
+.th{border:2px solid #e9e8e3;border-radius:16px;padding:6px 6px 10px;background:#fff;cursor:pointer;text-align:left;font:inherit;color:inherit;transition:border-color .15s}
+.th:hover{border-color:#b9b7af}
+.th.on{border-color:#141414}
+.th canvas{display:block;width:100%;aspect-ratio:16/10;border-radius:11px;background:#f1f0ec}
+.th b{display:block;font-size:14.5px;margin:8px 4px 1px}
+.th span{display:block;font-size:12.5px;color:#73726c;margin:0 4px;line-height:1.35}
+.hint{font-size:13.5px;color:#73726c;margin:14px 2px 0}
+@media (max-width:820px){#thumbs{grid-template-columns:repeat(2,minmax(0,1fr))}.host{max-width:58%}}
+</style>
+</head>
+<body>
+<main>
+<p class="k">Imperium Gzowiańskie</p>
+<h1>Pięć wariantów wyglądu</h1>
+<p class="lead">Ta sama działka w pięciu stylach, z przykładowym kawałkiem gry: tura gracza, kurs Gzowium, Ośmiornica i karta z paka. Kliknij miniaturę, żeby zmienić styl. Przeciągnij po działce, żeby ją obrócić.</p>
+<div id="stage">
+<canvas id="gl"></canvas>
+<div class="ui chip"><i></i><b>Tura: Rysio</b><span>340 000 szyszek</span></div>
+<div class="ui rate">GZOWIUM 12 400<em>▲ 8%</em></div>
+<div class="ui host"><div class="octo"><svg viewBox="0 0 100 100" fill="none" stroke="var(--octo)" stroke-width="7" stroke-linecap="round"><path d="M50 16c-15 0-24 11-24 24 0 8 3 14 8 18h32c5-4 8-10 8-18 0-13-9-24-24-24z" fill="var(--octo)" stroke="none"/><path d="M34 56c-4 10-14 8-20 14"/><path d="M41 58c-2 12-10 14-13 24"/><path d="M50 58c0 12 0 18 0 28"/><path d="M59 58c2 12 10 14 13 24"/><path d="M66 56c4 10 14 8 20 14"/><circle cx="42" cy="38" r="4" fill="var(--octobg)" stroke="none"/><circle cx="58" cy="38" r="4" fill="var(--octobg)" stroke="none"/></svg></div><div class="say"><small>Ośmiornica</small>Rysio wchodzi na Plażę Jurka. Dwa domki, więc 60 tysięcy szyszek poproszę.</div></div>
+<div class="ui card"><img src="warianty-img/waldek.jpg" alt="Waldek pozuje z helikopterem"><div class="t"><b>Helikopter</b><u>Legendarna</u></div><p>Leć na dowolne pole planszy.</p></div>
+</div>
+<div id="thumbs"></div>
+<p class="hint">Możesz też powiedzieć „2, ale z kolorami z 1” albo „coś pomiędzy 1 i 5”. Układ działki, pola i interfejs są tu tylko przykładem, wybierasz sam klimat.</p>
+</main>
+<script type="module">
+import * as THREE from 'three'
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js'
+
+const STYLES = [
+  { id: 'lowpoly', name: '1. Low-poly nasycone', desc: 'Kanciaste bryły, mocne kolory, długie cienie. Jak Ośrodek Daje.', kind: 'lambert', shadows: true, elev: 34, zoom: 1,
+    css: { bg: 'linear-gradient(180deg,#ffd9a0,#f7b98b)', font: 'ui-rounded,"SF Pro Rounded",-apple-system,sans-serif', ink: '#2a1a12', panel: '#fff6e6', border: '0 solid transparent', r: '16px', ro: '50%', rc: '14px', shadow: '0 6px 0 rgba(120,60,20,.25)', shadowc: '0 10px 0 rgba(120,60,20,.25)', card: '#fff6e6', acc: '#e2531b', bold: 800, ls: '0', octobg: '#2a1a12', octo: '#fff6e6', photo: 'saturate(1.15) contrast(1.05)' },
+    pal: { grass: '#6cc24a', grass2: '#57ab3d', sand: '#f2d27a', water: '#2f9fe0', tile: '#fff1cf', wood: '#c98a4b', woodDark: '#4a2f22', roof: '#3a2620', door: '#e23b2e', concrete: '#b9b2a6', glass: '#7fd3ea', pine: '#1f7a43', trunk: '#7a4a2a', stone: '#8d8a86', fire: '#ff8a1e', heli: '#1d3fae', white: '#ffffff', red: '#e23b2e', yellow: '#ffc21a', dark: '#2a1a12', panel: '#27408b', kayak: '#ff7a1a', kayak2: '#19c2b0', groups: ['#e23b2e', '#ff9d1a', '#ffd21a', '#2fbf71', '#2f9fe0', '#8a52d6'] } },
+  { id: 'makieta', name: '2. Makieta architekta', desc: 'Biało-drewniana makieta z pracowni. Miękkie cienie, mało koloru.', kind: 'standard', shadows: true, elev: 38, zoom: 1,
+    css: { bg: '#ecebe6', font: '-apple-system,"SF Pro Text","Helvetica Neue",sans-serif', ink: '#141414', panel: 'rgba(255,255,255,.92)', border: '1px solid rgba(20,20,20,.1)', r: '12px', ro: '50%', rc: '10px', shadow: '0 8px 24px rgba(0,0,0,.08)', shadowc: '0 14px 34px rgba(0,0,0,.14)', card: '#fff', acc: '#FF6A13', bold: 600, ls: '-.01em', octobg: '#141414', octo: '#fff', photo: 'grayscale(1) contrast(1.08)' },
+    pal: { grass: '#f1efe9', grass2: '#e9e6de', sand: '#e6dcc6', water: '#cfdde2', tile: '#ffffff', wood: '#d6b58a', woodDark: '#b98f62', roof: '#c9a67c', door: '#FF6A13', concrete: '#e2dfd8', glass: '#dfeaec', pine: '#f7f5f0', trunk: '#d6b58a', stone: '#dcd9d2', fire: '#FF6A13', heli: '#f7f5f0', white: '#ffffff', red: '#FF6A13', yellow: '#ecd9a4', dark: '#3a3a37', panel: '#c5cdd0', kayak: '#FF6A13', kayak2: '#d6b58a', groups: ['#FF6A13', '#c9a67c', '#9fb3b8', '#8f9d7c', '#b9a5c9', '#3a3a37'] } },
+  { id: 'piksele', name: '3. Piksele', desc: 'Grube piksele i komiksowe cieniowanie, w duchu mapy z gzowo.fun.', kind: 'toon', shadows: false, pixel: 4.2, elev: 35.26, zoom: 1,
+    css: { bg: '#7ec8f2', font: '"Menlo","Monaco","Courier New",monospace', ink: '#10131f', panel: '#fffbe8', border: '3px solid #10131f', r: '0', ro: '0', rc: '0', shadow: '5px 5px 0 #10131f', shadowc: '6px 6px 0 #10131f', card: '#fffbe8', acc: '#d4352a', bold: 700, ls: '.02em', octobg: '#10131f', octo: '#fffbe8', photo: 'contrast(1.3) saturate(1.3)' },
+    pal: { grass: '#5dbb3f', grass2: '#4aa332', sand: '#f0d68a', water: '#2b7fe0', tile: '#f6e6b4', wood: '#b9763f', woodDark: '#5a3a26', roof: '#6b3a2a', door: '#d4352a', concrete: '#a9a9b5', glass: '#9be3ff', pine: '#1e6e3a', trunk: '#6b4226', stone: '#7d7d8a', fire: '#ff9a1e', heli: '#2338a8', white: '#ffffff', red: '#d4352a', yellow: '#ffcc22', dark: '#10131f', panel: '#2a3f9c', kayak: '#ff8a1e', kayak2: '#25c4a8', groups: ['#d4352a', '#ff8a1e', '#ffcc22', '#35b257', '#2b7fe0', '#8d4fd0'] } },
+  { id: 'geodezja', name: '4. Mapa geodezyjna', desc: 'Kreska tuszem na papierze, numery działek i pieczątki, jak Twoja mapa z 2021.', kind: 'paper', shadows: false, edges: true, elev: 46, zoom: .96,
+    css: { bg: '#efe9d8', font: '"American Typewriter","Courier New",monospace', ink: '#1b2452', panel: '#f7f2e3', border: '1.5px solid #1b2452', r: '2px', ro: '50%', rc: '2px', shadow: 'none', shadowc: '3px 4px 0 rgba(27,36,82,.18)', card: '#f7f2e3', acc: '#b3261e', bold: 700, ls: '.03em', octobg: '#f7f2e3', octo: '#b3261e', photo: 'grayscale(1) sepia(.35) contrast(1.15)' },
+    pal: { grass: '#f3eedf', grass2: '#ebe5d2', sand: '#f3eedf', water: '#dfe8f0', tile: '#f7f2e3', wood: '#f3eedf', woodDark: '#e6dfca', roof: '#e6dfca', door: '#b3261e', concrete: '#f3eedf', glass: '#dfe8f0', pine: '#e8efdc', trunk: '#f3eedf', stone: '#ebe5d2', fire: '#b3261e', heli: '#dfe8f0', white: '#f7f2e3', red: '#b3261e', yellow: '#f3eedf', dark: '#1b2452', panel: '#dfe8f0', kayak: '#f1c9b8', kayak2: '#dfe8f0', groups: ['#b3261e', '#1b2452', '#b3261e', '#1b2452', '#b3261e', '#1b2452'] } },
+  { id: 'zabawka', name: '5. Zabawka', desc: 'Zaokrąglone, błyszczące klocki w cukierkowych kolorach. Jak plastikowy zestaw.', kind: 'toy', shadows: true, rounded: true, elev: 36, zoom: 1,
+    css: { bg: 'linear-gradient(160deg,#dff3ff,#ffe9f3)', font: 'ui-rounded,"SF Pro Rounded",-apple-system,sans-serif', ink: '#27304a', panel: '#ffffff', border: '0 solid transparent', r: '22px', ro: '50%', rc: '20px', shadow: '0 10px 26px rgba(60,80,140,.18)', shadowc: '0 16px 36px rgba(60,80,140,.24)', card: '#ffffff', acc: '#ff4f8b', bold: 800, ls: '0', octobg: '#ff4f8b', octo: '#ffffff', photo: 'saturate(1.25) brightness(1.04)' },
+    pal: { grass: '#9be37a', grass2: '#84d463', sand: '#ffe39a', water: '#6cc8ff', tile: '#ffffff', wood: '#ffb46b', woodDark: '#8a5a44', roof: '#ff6f61', door: '#ff4f8b', concrete: '#e6e9f2', glass: '#a8ecff', pine: '#3fca7a', trunk: '#b9774a', stone: '#c8cede', fire: '#ffa53a', heli: '#5a7bff', white: '#ffffff', red: '#ff5a5a', yellow: '#ffd43a', dark: '#27304a', panel: '#5a7bff', kayak: '#ff914d', kayak2: '#3fd6c2', groups: ['#ff5a5a', '#ffa53a', '#ffd43a', '#3fca7a', '#6cc8ff', '#b07bff'] } },
+]
+
+const stage = document.getElementById('stage'), canvas = document.getElementById('gl')
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true })
+renderer.shadowMap.type = THREE.PCFSoftShadowMap
+renderer.outputColorSpace = THREE.SRGBColorSpace
+
+const toonMap = new THREE.DataTexture(new Uint8Array([120, 120, 120, 255, 190, 190, 190, 255, 255, 255, 255, 255]), 3, 1, THREE.RGBAFormat)
+toonMap.minFilter = toonMap.magFilter = THREE.NearestFilter
+toonMap.needsUpdate = true
+
+function paperTexture(water) {
+  const c = document.createElement('canvas')
+  c.width = c.height = 1024
+  const x = c.getContext('2d')
+  x.fillStyle = water ? '#dfe8f0' : '#f3eedf'
+  x.fillRect(0, 0, 1024, 1024)
+  x.strokeStyle = water ? 'rgba(46,86,150,.55)' : 'rgba(27,36,82,.5)'
+  x.lineWidth = water ? 2 : 2.2
+  if (water) {
+    for (let y = 30; y < 1024; y += 46) { x.beginPath(); for (let i = 0; i <= 1024; i += 16) x.lineTo(i, y + Math.sin(i / 38 + y) * 7); x.stroke() }
+  } else {
+    const lines = [[0, 300, 1024, 250], [0, 640, 1024, 700], [260, 0, 300, 1024], [640, 0, 600, 1024], [300, 300, 620, 660], [0, 860, 600, 900], [640, 420, 1024, 470]]
+    for (const l of lines) { x.beginPath(); x.moveTo(l[0], l[1]); x.lineTo(l[2], l[3]); x.stroke() }
+    x.fillStyle = 'rgba(27,36,82,.62)'
+    x.font = '600 34px "Courier New",monospace'
+    const nums = [['34', 420, 180], ['33/2', 90, 180], ['35', 760, 160], ['112', 110, 500], ['34/1', 760, 600], ['41', 420, 800], ['36', 120, 960], ['dr.', 800, 880]]
+    for (const n of nums) x.fillText(n[0], n[1], n[2])
+    x.strokeStyle = 'rgba(27,36,82,.16)'
+    x.lineWidth = 1
+    for (let i = -1024; i < 1024; i += 18) { x.beginPath(); x.moveTo(i, 1024); x.lineTo(i + 300, 724); x.stroke() }
+  }
+  const t = new THREE.CanvasTexture(c)
+  t.colorSpace = THREE.SRGBColorSpace
+  t.anisotropy = 4
+  return t
+}
+
+function buildScene(S) {
+  const scene = new THREE.Scene(), P = S.pal, cache = {}
+  const ink = new THREE.LineBasicMaterial({ color: P.dark })
+  const mat = (key, o = {}) => {
+    const id = key + JSON.stringify(o)
+    if (cache[id]) return cache[id]
+    const color = new THREE.Color(P[key] || key)
+    let m
+    if (S.kind === 'lambert') m = new THREE.MeshLambertMaterial({ color, flatShading: true })
+    else if (S.kind === 'standard') m = new THREE.MeshStandardMaterial({ color, roughness: .92, metalness: 0 })
+    else if (S.kind === 'toon') m = new THREE.MeshToonMaterial({ color, gradientMap: toonMap })
+    else if (S.kind === 'paper') m = new THREE.MeshBasicMaterial({ color, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })
+    else m = new THREE.MeshPhysicalMaterial({ color, roughness: .38, clearcoat: .7, clearcoatRoughness: .25 })
+    if (o.glass && S.kind !== 'paper' && S.kind !== 'toon') { m.transparent = true; m.opacity = S.kind === 'standard' ? .75 : .82 }
+    return (cache[id] = m)
+  }
+  const add = (geo, key, x, y, z, o = {}) => {
+    const m = new THREE.Mesh(geo, o.mat || mat(key, o))
+    m.position.set(x, y, z)
+    if (o.rot) m.rotation.set(...o.rot)
+    if (o.scale) m.scale.set(...o.scale)
+    m.castShadow = !o.flat
+    m.receiveShadow = true
+    if (S.edges && !o.noEdge) m.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo, 24), ink))
+    ;(o.parent || scene).add(m)
+    return m
+  }
+  const box = (w, h, d, key, x, y, z, o = {}) => add(S.rounded && !o.sharp ? new RoundedBoxGeometry(w, h, d, 3, Math.min(w, h, d) * .22) : new THREE.BoxGeometry(w, h, d), key, x, y, z, o)
+  const cyl = (r1, r2, h, key, x, y, z, o = {}) => add(new THREE.CylinderGeometry(r1, r2, h, o.seg || 10), key, x, y, z, o)
+  const cone = (r, h, key, x, y, z, o = {}) => add(new THREE.ConeGeometry(r, h, o.seg || 7), key, x, y, z, o)
+
+  const SCARP = 2.4
+  const gy = (x, z) => (x < 1 && z < -6 ? SCARP : 0)
+
+  box(46, 1.6, 46, 'grass', 0, -.8, 0, { sharp: true, flat: true })
+  box(24, SCARP, 17, 'grass2', -11, SCARP / 2, -14.5, { sharp: true })
+  box(5, .16, 30, 'sand', 13.5, .08, -2, { sharp: true, flat: true })
+  box(7.2, .1, 46, 'water', 19.4, .06, 0, { sharp: true, flat: true, glass: true })
+  if (S.kind === 'paper') {
+    const g = new THREE.Mesh(new THREE.PlaneGeometry(38.6, 46), new THREE.MeshBasicMaterial({ map: paperTexture(false) }))
+    g.rotation.x = -Math.PI / 2
+    g.position.set(-3.7, .02, 0)
+    scene.add(g)
+    const w = new THREE.Mesh(new THREE.PlaneGeometry(7.2, 46), new THREE.MeshBasicMaterial({ map: paperTexture(true) }))
+    w.rotation.x = -Math.PI / 2
+    w.position.set(19.4, .13, 0)
+    scene.add(w)
+  }
+
+  box(9, 2.4, 7, 'concrete', -7, 1.2, -2.6)
+  box(3.4, 1.7, .3, 'dark', -8.4, .95, .86, { noEdge: true })
+  box(7.6, 2.3, 4, 'glass', -7, 3.6, -4.1, { glass: true })
+  box(8.2, .28, 4.6, 'dark', -7, 4.9, -4.1)
+  box(9, .22, 3, 'wood', -7, 2.52, -.6)
+  for (const px of [-10.6, -7, -3.4]) box(.16, 2.3, .16, 'dark', px, 3.6, -2.14, { noEdge: true })
+
+  const cabin = (x, z, r) => {
+    const g = new THREE.Group()
+    g.position.set(x, gy(x, z), z)
+    g.rotation.y = r
+    scene.add(g)
+    for (const sx of [-1.2, 1.2]) for (const sz of [-.9, .9]) box(.4, .4, .4, 'stone', sx, .2, sz, { parent: g, noEdge: true })
+    box(3.2, 1.7, 2.5, 'woodDark', 0, 1.25, 0, { parent: g })
+    box(3.7, .26, 3, 'roof', 0, 2.26, 0, { parent: g, rot: [0, 0, .09] })
+    box(.62, 1.15, .1, 'door', -.5, 1.0, 1.28, { parent: g, noEdge: true })
+    box(.8, .6, .1, 'white', .75, 1.35, 1.28, { parent: g, noEdge: true })
+  }
+  cabin(-14, 5, .25)
+  cabin(-10.5, 9.5, -.2)
+  cabin(-15, 12.5, .5)
+
+  for (const sx of [-2.2, 2.2]) for (const sz of [-1.5, 1.5]) box(.26, 2.5, .26, 'woodDark', 3 + sx, 1.25, -11 + sz, { noEdge: true })
+  box(5.4, .26, 3.9, 'roof', 3, 2.62, -11)
+  box(1.5, .8, 1.3, 'red', 2.6, .5, -11)
+
+  const pine = (x, z, s = 1) => {
+    const y = gy(x, z)
+    cyl(.2 * s, .28 * s, 3.2 * s, 'trunk', x, y + 1.6 * s, z, { seg: 6, noEdge: true })
+    cone(1.7 * s, 2.4 * s, 'pine', x, y + 3.6 * s, z)
+    cone(1.3 * s, 2.1 * s, 'pine', x, y + 4.9 * s, z)
+    cone(.9 * s, 1.7 * s, 'pine', x, y + 6 * s, z)
+  }
+  for (const p of [[-1, 2, 1.1], [1.5, 6, 1], [-3.5, 6.5, .9], [0, 10.5, 1.15], [5, 9, .95], [7.5, 1, 1.05], [-13, -9, 1], [-3, -12.5, .9], [8, 13.5, 1], [-6, 13.5, .85]]) pine(...p)
+
+  for (let i = 0; i < 7; i++) box(.55, .4, .55, 'stone', 5 + Math.cos(i * .9) * 1.15, .2, 4.2 + Math.sin(i * .9) * 1.15, { rot: [0, i, 0], noEdge: true })
+  cone(.62, 1.3, 'fire', 5, .75, 4.2, { seg: 5, noEdge: true })
+  cone(.34, .8, 'yellow', 5, .6, 4.2, { seg: 5, noEdge: true })
+
+  box(2.6, .12, .9, 'kayak', .3, 2.2, 4.2, { rot: [0, .5, .12], noEdge: true })
+
+  box(2.8, .5, 1.1, 'white', 13.2, .4, 3, { rot: [0, .4, 0] })
+  box(3.4, .34, .7, 'kayak', 13.6, .32, -4, { rot: [0, -.25, 0] })
+  box(3.4, .34, .7, 'kayak2', 14.6, .32, -5.6, { rot: [0, -.1, 0] })
+  box(.7, 1.3, 9, 'stone', 11.6, .65, -14.5)
+
+  const heli = new THREE.Group()
+  heli.position.set(-15, SCARP, -13)
+  heli.rotation.y = .6
+  scene.add(heli)
+  add(new THREE.SphereGeometry(1.25, 10, 8), 'heli', 0, 1.5, 0, { parent: heli, scale: [1.35, 1, 1] })
+  box(2.6, .34, .34, 'heli', 2.4, 1.7, 0, { parent: heli })
+  box(.2, .9, .5, 'heli', 3.6, 2.05, 0, { parent: heli })
+  box(5.6, .07, .3, 'dark', 0, 2.85, 0, { parent: heli, noEdge: true })
+  box(.3, .07, 5.6, 'dark', 0, 2.85, 0, { parent: heli, noEdge: true })
+  for (const sz of [-.8, .8]) box(2.6, .1, .12, 'dark', 0, .12, sz, { parent: heli, noEdge: true })
+
+  cyl(.05, .05, 3.6, 'dark', 6.6, 1.8, -15.4, { noEdge: true })
+  cyl(.34, .34, 2.2, 'white', 6, 1.7, -15.4)
+  cone(.34, .8, 'red', 6, 3.2, -15.4, { seg: 10 })
+  for (const a of [0, 2.1, 4.2]) box(.08, .7, .6, 'red', 6 + Math.cos(a) * .42, .95, -15.4 + Math.sin(a) * .42, { rot: [0, -a, 0], noEdge: true })
+
+  const dig = new THREE.Group()
+  dig.position.set(8, 0, -7.5)
+  dig.rotation.y = -.5
+  scene.add(dig)
+  box(2.6, .8, 1.5, 'yellow', 0, .95, 0, { parent: dig })
+  box(1.1, 1.1, 1.3, 'glass', -.5, 1.9, 0, { parent: dig, glass: true })
+  box(2.2, .3, .3, 'yellow', 1.9, 2.1, 0, { parent: dig, rot: [0, 0, .6] })
+  box(1.6, .26, .26, 'yellow', 3.1, 1.9, 0, { parent: dig, rot: [0, 0, -.9] })
+  box(.6, .5, .7, 'dark', 3.6, 1.05, 0, { parent: dig })
+  for (const sx of [-.9, .9]) for (const sz of [-.8, .8]) cyl(.48, .48, .3, 'dark', sx, .48, sz, { parent: dig, rot: [Math.PI / 2, 0, 0], seg: 12, noEdge: true })
+
+  for (let i = 0; i < 3; i++) box(2.2, .1, 1.3, 'panel', -3 + i * 2.5, .9, 14.8, { rot: [-.5, 0, 0] })
+
+  const tiles = []
+  for (let i = 0; i < 7; i++) tiles.push([-20 + i * 5, -19])
+  for (let i = 1; i < 6; i++) tiles.push([10, -19 + i * 6.33])
+  for (let i = 6; i >= 0; i--) tiles.push([-20 + i * 5, 19])
+  for (let i = 5; i > 0; i--) tiles.push([-20, -19 + i * 6.33])
+  const special = { 0: 'yellow', 6: 'white', 12: 'white', 18: 'white', 3: 'white', 15: 'white' }
+  tiles.forEach(([x, z], i) => {
+    const y = gy(x, z < -12 ? -12 : z)
+    const t = box(4.1, .34, 4.1, i === 0 ? 'yellow' : 'tile', x, y + .17, z)
+    if (!(i in special)) {
+      const top = z <= -19 || z >= 19
+      const g = P.groups[Math.floor(i / 4) % 6]
+      box(top ? 4.1 : .9, .36, top ? .9 : 4.1, g, x + (top ? 0 : (x < 0 ? -1.6 : 1.6)), y + .19, z + (top ? (z < 0 ? -1.6 : 1.6) : 0), { noEdge: true })
+    }
+    t.userData.i = i
+  })
+
+  const pawn = (i, key, dx) => {
+    const [x, z] = tiles[i], y = gy(x, z < -12 ? -12 : z) + .34
+    cyl(.34, .6, 1.3, key, x + dx, y + .65, z, { seg: 12 })
+    add(new THREE.SphereGeometry(.44, 12, 10), key, x + dx, y + 1.6, z)
+  }
+  pawn(9, 'red', -.6)
+  pawn(9, 'dark', .8)
+  pawn(20, 'yellow', 0)
+  const hut = (i, dx) => {
+    const [x, z] = tiles[i]
+    box(.9, .7, .8, 'woodDark', x + dx, .7, z - .6)
+    box(1.05, .16, .95, 'roof', x + dx, 1.12, z - .6, { noEdge: true })
+  }
+  hut(10, -.8)
+  hut(10, .5)
+  hut(14, 0)
+
+  if (S.kind === 'paper') {
+    scene.add(new THREE.AmbientLight(0xffffff, 1))
+  } else {
+    scene.add(new THREE.HemisphereLight(0xffffff, S.kind === 'standard' ? 0xd9d4c8 : 0x6f8f5a, S.kind === 'standard' ? 1.55 : S.kind === 'toon' ? 1.2 : 1.25))
+    const sun = new THREE.DirectionalLight(S.kind === 'lambert' ? 0xffe2b8 : 0xffffff, S.kind === 'standard' ? 1.5 : S.kind === 'toy' ? 2.1 : 2.3)
+    sun.position.set(-26, 34, 18)
+    if (S.shadows) {
+      sun.castShadow = true
+      sun.shadow.mapSize.set(2048, 2048)
+      const c = sun.shadow.camera
+      c.left = c.bottom = -38
+      c.right = c.top = 38
+      c.near = 1
+      c.far = 120
+      sun.shadow.bias = -.0006
+      sun.shadow.normalBias = .04
+      sun.shadow.radius = S.kind === 'standard' ? 7 : 3
+    }
+    scene.add(sun)
+  }
+  return scene
+}
+
+const scenes = STYLES.map(buildScene)
+const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, .1, 400)
+let current = 0, az = Math.PI / 4, raf = 0
+
+function frame(w, h, S) {
+  const span = 33 / S.zoom, aspect = w / h
+  camera.left = -span * aspect * .62
+  camera.right = span * aspect * .62
+  camera.top = span * .62
+  camera.bottom = -span * .62
+  const e = THREE.MathUtils.degToRad(S.elev), d = 120
+  camera.position.set(Math.sin(az) * Math.cos(e) * d - 2, Math.sin(e) * d, Math.cos(az) * Math.cos(e) * d)
+  camera.lookAt(-2, 1.2, 0)
+  camera.updateProjectionMatrix()
+}
+
+function draw() {
+  raf = 0
+  const S = STYLES[current], r = stage.getBoundingClientRect()
+  const dpr = Math.min(devicePixelRatio || 1, 2), k = S.pixel ? 1 / S.pixel : dpr
+  renderer.shadowMap.enabled = !!S.shadows
+  renderer.setSize(Math.max(2, Math.round(r.width * k)), Math.max(2, Math.round(r.height * k)), false)
+  canvas.style.imageRendering = S.pixel ? 'pixelated' : 'auto'
+  frame(r.width, r.height, S)
+  renderer.render(scenes[current], camera)
+}
+const request = () => { if (!raf) raf = requestAnimationFrame(draw) }
+
+function select(i) {
+  current = i
+  for (const [k, v] of Object.entries(STYLES[i].css)) stage.style.setProperty('--' + k, String(v))
+  document.querySelectorAll('.th').forEach((b, n) => b.classList.toggle('on', n === i))
+  request()
+}
+
+const thumbs = document.getElementById('thumbs')
+STYLES.forEach((S, i) => {
+  const b = document.createElement('button')
+  b.type = 'button'
+  b.className = 'th'
+  b.innerHTML = `<canvas width="480" height="300"></canvas><b>${S.name}</b><span>${S.desc}</span>`
+  b.addEventListener('click', () => select(i))
+  thumbs.append(b)
+})
+
+function renderThumbs() {
+  STYLES.forEach((S, i) => {
+    const c = thumbs.children[i].querySelector('canvas'), x = c.getContext('2d')
+    const w = S.pixel ? Math.round(480 / S.pixel) : 480, h = S.pixel ? Math.round(300 / S.pixel) : 300
+    renderer.shadowMap.enabled = !!S.shadows
+    renderer.setSize(w, h, false)
+    frame(480, 300, S)
+    renderer.render(scenes[i], camera)
+    x.imageSmoothingEnabled = !S.pixel
+    x.clearRect(0, 0, 480, 300)
+    const bg = S.css.bg.startsWith('linear') ? S.css.bg.match(/#[0-9a-f]{6}/i)[0] : S.css.bg
+    x.fillStyle = bg
+    x.fillRect(0, 0, 480, 300)
+    x.drawImage(canvas, 0, 0, w, h, 0, 0, 480, 300)
+  })
+}
+
+let drag = null
+stage.addEventListener('pointerdown', e => { drag = { x: e.clientX, az }; stage.setPointerCapture(e.pointerId) })
+stage.addEventListener('pointermove', e => { if (drag) { az = drag.az - (e.clientX - drag.x) * .006; request() } })
+stage.addEventListener('pointerup', () => { drag = null })
+stage.addEventListener('pointercancel', () => { drag = null })
+new ResizeObserver(request).observe(stage)
+
+renderThumbs()
+select(0)
+window.__v = { select, STYLES }
+</script>
+</body>
+</html>
