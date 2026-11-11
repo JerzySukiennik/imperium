@@ -367,6 +367,7 @@ function connectVoice(code) {
     },
   })
   host.setLive(live)
+  live.unlock()
   live.connect()
 }
 
@@ -423,6 +424,8 @@ $('#bTrade').onclick = actions.trade
 const mic = $('#mic')
 mic.onpointerdown = e => { e.preventDefault(); mic.setPointerCapture(e.pointerId); mic.classList.add('on'); mic.textContent = 'Słucham'; live && live.talkStart() }
 mic.onpointerup = mic.onpointercancel = () => { mic.classList.remove('on'); mic.textContent = 'Mów'; live && live.talkEnd() }
-addEventListener('pointerdown', e => { audio.unlock(); if (live) live.unlock(); if (e.target.closest && e.target.closest('button')) audio.play('click', { volume: .5 }) }, { passive: true })
-window.__game = { state: () => S, E, act, tool, actions, world }
+const unlock = () => { audio.unlock(); if (live) live.unlock() }
+for (const type of ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown']) addEventListener(type, unlock, { passive: true, capture: true })
+addEventListener('pointerdown', e => { if (e.target.closest && e.target.closest('button')) audio.play('click', { volume: .5 }) }, { passive: true })
+window.__game = { state: () => S, E, act, tool, actions, world, voice: () => live ? live.audioState() : 'none' }
 setup()
