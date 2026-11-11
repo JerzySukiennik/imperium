@@ -43,8 +43,9 @@ function session(code, manual) {
 
 const bad = await session('zly-kod', true)
 console.log('wrong code ->', bad.closed, bad.ready ? 'FAIL: connected' : 'ok: refused')
-let r = await session('gzowo', true)
-if (!r.ready) { console.log('manual VAD setup refused:', r.closed, '-> retrying with automatic'); r = await session('gzowo', false) }
+const CODE = process.env.CODE || 'gzowo'
+let r = await session(CODE, true)
+if (!r.ready) { console.log('manual VAD setup refused:', r.closed, '-> retrying with automatic'); r = await session(CODE, false) }
 console.log(JSON.stringify(r, null, 1))
 const ok = r.ready && r.turns.length >= 2 && r.turns[0].audioSeconds > 0.5 && r.tools.some(t => t.name === 'rzuc_kostkami') && !bad.ready
 console.log(ok ? 'ALL PASS' : 'FAIL')

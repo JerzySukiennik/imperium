@@ -1,0 +1,29 @@
+<!doctype html>
+<!-- Imperium Gzowianskie: pass-the-tablet property game on the Gzowo plot, hosted by the Octopus. -->
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#ffd9a0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Imperium Gzowiańskie</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="assets/icon.svg">
+<link rel="stylesheet" href="css/style.css">
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.170.0/build/three.module.js"}}</script>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div id="hud" hidden>
+  <div class="chip" id="who"></div>
+  <div class="chip right" id="rate"></div>
+  <div id="others"></div>
+  <div id="host"><button id="octo" type="button" aria-label="Ośmiornica"></button><div id="say"><small>Ośmiornica</small><span id="line"></span></div><button id="mic" type="button" hidden>Mów</button></div>
+  <div id="side"><button id="bCards" type="button">Karty</button><button id="bPack" type="button">Pak</button><button id="bBuild" type="button">Buduj</button><button id="bMarket" type="button">Giełda</button><button id="bTrade" type="button">Handel</button></div>
+  <button id="main" type="button"></button>
+</div>
+<div id="layer"></div>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
