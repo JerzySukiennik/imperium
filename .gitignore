@@ -3,3 +3,4 @@ Niepotrzebne/audio-src/
 Niepotrzebne/muzyka-src/
 relay/.dev.vars
 relay/.wrangler/
+__pycache__/

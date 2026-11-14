@@ -1,0 +1,218 @@
+[
+ {
+  "name": "Szyszki 1",
+  "key": "szyszka1",
+  "count": 40,
+  "size": [
+   12.0,
+   11.4,
+   13.0
+  ],
+  "volume_cm3": 0.71,
+  "pieces": 1,
+  "islands": 0,
+  "overhangs": [],
+  "colour": "brązowy",
+  "tris": 180,
+  "slice": {
+   "ok": true,
+   "message": "Success.",
+   "time": "1h 45m 57s",
+   "grams": 28.12,
+   "layers": 64,
+   "warnings": []
+  }
+ },
+ {
+  "name": "Szyszki 5",
+  "key": "szyszka5",
+  "count": 24,
+  "size": [
+   16.0,
+   15.2,
+   17.0
+  ],
+  "volume_cm3": 1.68,
+  "pieces": 1,
+  "islands": 0,
+  "overhangs": [],
+  "colour": "biały albo srebrny",
+  "tris": 220,
+  "slice": {
+   "ok": true,
+   "message": "Success.",
+   "time": "1h 51m 44s",
+   "grams": 33.74,
+   "layers": 84,
+   "warnings": []
+  }
+ },
+ {
+  "name": "Szyszki 10",
+  "key": "szyszka10",
+  "count": 12,
+  "size": [
+   20.0,
+   19.0,
+   21.0
+  ],
+  "volume_cm3": 3.31,
+  "pieces": 1,
+  "islands": 0,
+  "overhangs": [],
+  "colour": "żółty albo złoty",
+  "tris": 260,
+  "slice": {
+   "ok": true,
+   "message": "Success.",
+   "time": "1h 44m 34s",
+   "grams": 31.88,
+   "layers": 104,
+   "warnings": []
+  }
+ },
+ {
+  "name": "Drewno",
+  "key": "drewno",
+  "count": 24,
+  "size": [
+   22.0,
+   9.0,
+   9.0
+  ],
+  "volume_cm3": 1.46,
+  "pieces": 1,
+  "islands": 0,
+  "overhangs": [],
+  "colour": "brązowy",
+  "tris": 796,
+  "slice": {
+   "ok": true,
+   "message": "Success.",
+   "time": "1h 14m 0s",
+   "grams": 28.55,
+   "layers": 45,
+   "warnings": []
+  }
+ },
+ {
+  "name": "Piasek",
+  "key": "piasek",
+  "count": 20,
+  "size": [
+   18.9,
+   16.8,
+   8.5
+  ],
+  "volume_cm3": 0.88,
+  "pieces": 1,
+  "islands": 0,
+  "overhangs": [],
+  "colour": "żółty",
+  "tris": 100,
+  "slice": {
+   "ok": true,
+   "message": "Success.",
+   "time": "46m 39s",
+   "grams": 16.69,
+   "layers": 42,
+   "warnings": []
+  }
+ },
+ {
+  "name": "Ryby",
+  "key": "ryby",
+  "count": 20,
+  "size": [
+   23.4,
+   14.0,
+   4.0
+  ],
+  "volume_cm3": 0.7,
+  "pieces": 1,
+  "islands": 0,
+  "overhangs": [],
+  "colour": "niebieski",
+  "tris": 1560,
+  "slice": {
+   "ok": true,
+   "message": "Success.",
+   "time": "54m 9s",
+   "grams": 14.81,
+   "layers": 20,
+   "warnings": []
+  }
+ },
+ {
+  "name": "Domki",
+  "key": "domek",
+  "count": 16,
+  "size": [
+   17.2,
+   14.2,
+   12.6
+  ],
+  "volume_cm3": 2.23,
+  "pieces": 1,
+  "islands": 0,
+  "overhangs": [],
+  "colour": "ciemny brąz albo czarny",
+  "tris": 288,
+  "slice": {
+   "ok": true,
+   "message": "Success.",
+   "time": "1h 8m 24s",
+   "grams": 27.36,
+   "layers": 63,
+   "warnings": []
+  }
+ },
+ {
+  "name": "Domy",
+  "key": "dom",
+  "count": 10,
+  "size": [
+   26.0,
+   19.9,
+   17.5
+  ],
+  "volume_cm3": 6.74,
+  "pieces": 1,
+  "islands": 0,
+  "overhangs": [],
+  "colour": "szary albo biały",
+  "tris": 460,
+  "slice": {
+   "ok": true,
+   "message": "Success.",
+   "time": "1h 30m 52s",
+   "grams": 42.79,
+   "layers": 88,
+   "warnings": []
+  }
+ },
+ {
+  "name": "Niewypały",
+  "key": "niewypal",
+  "count": 2,
+  "size": [
+   18.6,
+   18.9,
+   16.4
+  ],
+  "volume_cm3": 1.1,
+  "pieces": 1,
+  "islands": 0,
+  "overhangs": [],
+  "colour": "zielony albo czarny",
+  "tris": 1360,
+  "slice": {
+   "ok": true,
+   "message": "Success.",
+   "time": "14m 51s",
+   "grams": 2.52,
+   "layers": 82,
+   "warnings": []
+  }
+ }
+]

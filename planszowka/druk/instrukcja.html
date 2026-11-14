@@ -1,0 +1,168 @@
+<!doctype html>
+<!-- Imperium Gzowianskie board game: the rulebook on A4, numbers taken from gra.mjs. -->
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Imperium Gzowiańskie: instrukcja</title>
+<style>
+@page{size:A4;margin:0}
+:root{--ink:#2a1a12;--cream:#fff6e6;--soft:#f6e3c2;--mute:#8a6a52;--acc:#e2531b;--font:ui-rounded,"SF Pro Rounded",-apple-system,"Helvetica Neue",Arial,sans-serif}
+*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+html,body{margin:0;padding:0;background:#fff;font-family:var(--font);color:var(--ink)}
+.page{position:relative;width:210mm;height:297mm;padding:13mm 14mm 12mm;page-break-after:always;overflow:hidden}
+.page:last-child{page-break-after:auto}
+.fit{height:272mm;overflow:hidden}
+.cols{column-count:2;column-gap:8mm;column-fill:auto;height:100%}
+.pn{position:absolute;left:14mm;right:14mm;bottom:6mm;font-size:2.6mm;font-weight:700;color:var(--mute);display:flex;justify-content:space-between}
+h1{margin:0;font-size:15mm;line-height:.95;font-weight:900;letter-spacing:-.4mm}
+.lead{font-size:4.1mm;line-height:1.32;font-weight:600;margin:3mm 0 0}
+.hero{display:flex;gap:6mm;align-items:center;margin-bottom:4mm}
+.hero img{width:86mm;flex:none}
+.meta{display:flex;gap:2mm;margin-top:3.4mm;font-size:3mm;font-weight:800}
+.meta span{background:var(--ink);color:#fff;border-radius:2mm;padding:.9mm 2.4mm}
+h2{margin:0 0 1.6mm;font-size:5.6mm;line-height:1.05;font-weight:900;break-after:avoid}
+h2 span{display:inline-block;background:var(--ink);color:#fff;border-radius:50%;width:6.6mm;height:6.6mm;line-height:6.6mm;text-align:center;font-size:3.7mm;margin-right:1.6mm;vertical-align:.4mm}
+section{break-inside:avoid;margin:0 0 4.6mm}
+p,li{font-size:3.3mm;line-height:1.33;font-weight:500;margin:0 0 1.3mm}
+ul,ol{margin:0 0 1.3mm;padding-left:5mm}
+b{font-weight:800}
+.box{background:var(--cream);border-radius:3mm;padding:3mm 3.6mm;margin:1.6mm 0 2mm}
+.box p:last-child{margin-bottom:0}
+.tip{background:#ffe08a}
+table{width:100%;border-collapse:collapse;font-size:3.15mm;line-height:1.26;margin:1mm 0 2mm}
+td,th{padding:1.2mm 1.4mm;border-top:.25mm solid rgba(42,26,18,.22);vertical-align:middle;text-align:left;font-weight:500}
+th{font-size:2.45mm;letter-spacing:.3mm;text-transform:uppercase;color:var(--mute);font-weight:800;border-top:0}
+td:first-child b{white-space:nowrap}
+td img{width:9mm;height:9mm;display:block}
+.ic{display:inline-block;width:4.6mm;height:4.6mm;vertical-align:-1mm}
+.cards{column-count:2;column-gap:6mm;font-size:2.78mm}
+.cards div{break-inside:avoid;margin:0 0 1.05mm;line-height:1.22;font-weight:500}
+.cards i{font-style:normal;font-weight:800;color:var(--mute)}
+.wide section{break-inside:avoid;margin-bottom:3.6mm}
+.wide td{padding:.75mm 1.4mm}
+</style>
+</head>
+<body>
+<script type="module">
+import { FIELDS, GROUPS, RES, RULES, MODES, CARDS, COPIES, RARITY, WHEN, TOKENS, feeOf } from '../gra.mjs'
+const I = n => `<img class="ic" src="../art/ikony/${n}.png" alt="">`
+const P = n => `../art/ikony/${n}.png`
+const total = CARDS.reduce((a, c) => a + COPIES[c.rarity], 0)
+const ex = FIELDS.find(f => f.id === 'kanal')
+const SPECIAL = [
+  ['start', 'Śniadanie', `Za każdym razem, gdy tędy przechodzisz albo tu stajesz, bierzesz ${RULES.salary} szyszki i zbiory. Gdy staniesz dokładnie tutaj, dostajesz jeszcze ${RULES.startExact}.`],
+  ['moya', 'Stacja Moya', 'Dobierasz kartę za darmo.'],
+  ['niewypal', 'Niewypał', `Płacisz ${RULES.saperzy} szyszki saperom (do banku) albo czekasz na nich i tracisz następną kolejkę.`],
+  ['koparka', 'Koparka Waldka', `Waldek coś wykopał. Bierzesz ${RULES.koparka} dowolne surowce z banku.`],
+  ['heli', 'Helikopter', 'Przelatujesz na dowolne inne pole i od razu je wykonujesz. W locie nie mijasz Śniadania.'],
+  ['wojt', 'Wójt', `Podatek: płacisz bankowi ${RULES.wojtPerPlace} szyszkę za każde swoje miejsce, najmniej 1.`],
+  ['rakieta', 'GL Launch Site', `Start rakiety. Rzuć jedną kostką: przy 1 spadochron się nie otworzył i płacisz bankowi ${-RULES.rakieta[0]} szyszki, przy 2-6 bierzesz z banku tyle szyszek, ile wypadło.`],
+  ['grad', 'Burza z gradem', `Naprawy: płacisz bankowi ${RULES.gradCabin} szyszki za każdy swój domek i ${RULES.gradHouse} za każdy Dom.`],
+]
+const modes = Object.values(MODES).map(m => `<tr><td><b>${m.name}</b></td><td>${m.time}</td><td>${m.goal}</td></tr>`).join('')
+const page = (n, html, cls = '') => `<div class="page"><div class="fit ${cls}" data-fit="strona-${n}">${html}</div><div class="pn"><span>Imperium Gzowiańskie · instrukcja</span><span>${n} / 4</span></div></div>`
+
+const p1 = `<div class="hero"><div><h1>Imperium Gzowiańskie</h1><p class="lead">Gzowo 34 nad Narwią. Po dawnym ośrodku wędkarskim FSO zostały trzy domki z dziesięciu. Kupujcie miejsca, zbierajcie drewno, piasek i ryby, stawiajcie domki i zbudujcie własne imperium, zanim zrobi to ktoś inny.</p><div class="meta"><span>2-6 graczy</span><span>od 30 minut do 2,5 godziny</span><span>od 8 lat</span></div></div><img src="../art/dzialka.png" alt=""></div>
+<div class="cols" style="height:196mm">
+<section><h2>W pudełku</h2><ul>
+<li>plansza 70 × 70 cm</li><li>7 pionków i 2 zwykłe kostki</li>
+<li>szyszki, czyli pieniądze: ${TOKENS.szyszka1} po 1, ${TOKENS.szyszka5} po 5 i ${TOKENS.szyszka10} po 10</li>
+<li>surowce: ${TOKENS.drewno} drewna ${I('drewno')}, ${TOKENS.piasek} piasków ${I('piasek')} i ${TOKENS.ryby} ryb ${I('ryby')}</li>
+<li>${TOKENS.domek} domków ${I('domek')}, ${TOKENS.dom} Domów ${I('dom')} i ${TOKENS.niewypal} żetony niewypału</li>
+<li>${total} kart akcji, 16 aktów własności, 4 ściągi, 3 karty celu i 1 pusta karta na własny pomysł</li></ul></section>
+<section><h2>Cel gry</h2><p>Wygrywa ten, kto <b>pierwszy zbuduje imperium</b>. Jak duże, wybieracie przed grą i kładziecie obok planszy kartę celu:</p>
+<table><tr><th>Cel</th><th>Czas</th><th>Co trzeba zbudować</th></tr>${modes}</table>
+<p><b>Cała grupa</b> to wszystkie miejsca w jednym kolorze. Grup jest sześć, mają po 2 albo 3 miejsca.</p></section>
+<section><h2>Przygotowanie</h2><ol>
+<li>Każdy bierze pionek i stawia go na polu <b>Śniadanie</b>.</li>
+<li>Zaczyna najmłodszy, potem gracie zgodnie z ruchem wskazówek zegara.</li>
+<li>Pierwszy gracz dostaje <b>${RULES.startMoney} szyszek</b>, każdy następny o ${RULES.seatBonus} więcej (${[0, 1, 2].map(k => RULES.startMoney + k * RULES.seatBonus).join(', ')}...). To wyrównuje pierwszeństwo przy zakupach.</li>
+<li>Potasujcie karty akcji i połóżcie je na planszy. Akty własności, surowce, szyszki i budynki leżą obok jako bank. Bankiem opiekuje się jeden z graczy.</li>
+<li><b>Tylko w Osadzie:</b> każdy losuje ${MODES.szybka.deal} akty własności i bierze po 1 surowcu z każdego. Jeśli drugi akt jest w tym samym kolorze co pierwszy, wymień go na inny.</li></ol></section>
+<section><h2>Twoja tura</h2><ol>
+<li><b>Przed rzutem</b> możesz, w dowolnej kolejności: kupić kartę za 1 rybę (raz na turę), handlować, budować.</li>
+<li><b>Rzuć dwiema kostkami</b> i przesuń pionek o sumę oczek, zgodnie z ruchem wskazówek zegara.</li>
+<li><b>Wykonaj pole</b>, na którym stanąłeś.</li>
+<li><b>Po ruchu</b> znowu możesz handlować i budować. Potem gra następna osoba.</li></ol>
+<p>W jednej turze zagrywasz najwyżej <b>jedną kartę</b> z ręki. Karty „Gdy płacisz” i „W obronie” się do tego nie liczą.</p></section>
+<section><div class="box tip"><p><b>Na pierwszą partię:</b> zagrajcie Osadę. Trwa pół godziny i od pierwszej tury coś się dzieje, bo każdy ma już dwa miejsca.</p></div></section>
+</div>`
+
+const p2 = `<div class="cols">
+<section><h2><span>1</span>Miejsca</h2><p>16 pól z kolorowym paskiem to miejsca. Każde ma cenę, opłatę i surowiec, który daje.</p>
+<table>
+<tr><td><b>Wolne</b></td><td>Możesz je kupić za cenę z pola. Bierzesz akt własności i od razu <b>${RULES.buyBonus} surowiec</b> tego miejsca. Nie kupujesz: nic się nie dzieje.</td></tr>
+<tr><td><b>Twoje</b></td><td>Bierzesz z banku <b>${RULES.ownLanding} surowce</b> tego miejsca.</td></tr>
+<tr><td><b>Cudze</b></td><td>Płacisz właścicielowi <b>opłatę za wejście</b>.</td></tr></table></section>
+<section><h2><span>2</span>Opłata za wejście</h2><p>Liczy się zawsze najwyższa pasująca stawka. Gotowe kwoty są wypisane na akcie własności.</p>
+<table><tr><th>Co stoi na miejscu</th><th>Opłata</th><th>${ex.name}</th></tr>
+<tr><td>Samo miejsce</td><td>liczba z pola</td><td><b>${feeOf(ex, 0, false)}</b></td></tr>
+<tr><td>Właściciel ma całą grupę</td><td>×${RULES.feeGroup}</td><td><b>${feeOf(ex, 0, true)}</b></td></tr>
+<tr><td>Domek ${I('domek')}</td><td>×${RULES.feeCabin}</td><td><b>${feeOf(ex, 1, true)}</b></td></tr>
+<tr><td>Dom ${I('dom')}</td><td>×${RULES.feeHouse}</td><td><b>${feeOf(ex, 2, true)}</b></td></tr></table></section>
+<section><h2><span>3</span>Wykup</h2><p>Stoisz na cudzym miejscu, na którym <b>nie ma budynku</b>? Po zapłaceniu opłaty możesz je od razu wykupić. Płacisz właścicielowi <b>podwójną cenę</b> miejsca, a on nie może odmówić.</p>
+<div class="box"><p>Dlatego ważne miejsca chroni się domkiem. Wykup to też jedyny pewny sposób, żeby dokończyć grupę, gdy nikt nie chce się wymienić.</p></div></section>
+<section><h2><span>4</span>Śniadanie i zbiory</h2><p>Za każdym razem, gdy mijasz pole Śniadanie albo na nim stajesz, bierzesz <b>${RULES.salary} szyszki</b> i <b>zbiory</b>: po 1 surowcu z każdego swojego miejsca. Im więcej miejsc, tym większe zbiory.</p></section>
+<section><h2><span>5</span>Budowa</h2><p>Budujesz w swojej turze, przed rzutem albo po ruchu. Na jednym miejscu stoi tylko <b>jeden budynek</b>.</p>
+<table>
+<tr><td><img src="${P('domek')}" alt=""></td><td><b>Domek</b><br>${RULES.cabin.drewno} drewna ${I('drewno')} i ${RULES.cabin.piasek} piasek ${I('piasek')}</td><td>Na dowolnym swoim miejscu bez budynku.</td></tr>
+<tr><td><img src="${P('dom')}" alt=""></td><td><b>Dom</b><br>${RULES.house.drewno} drewno ${I('drewno')}, ${RULES.house.piasek} piaski ${I('piasek')} i ${RULES.house.ryby} ryby ${I('ryby')}</td><td>Zamiast domku i tylko wtedy, gdy masz całą grupę. Domek wraca do banku.</td></tr></table>
+<p>Budynek podnosi opłatę i chroni miejsce przed wykupem oraz przed kartą Ośmiornica.</p></section>
+<section><h2><span>6</span>Karty</h2><ul>
+<li>Kartę kupujesz za <b>1 rybę</b> ${I('ryby')}, raz na turę. Darmową dostajesz na Stacji Moya.</li>
+<li>Karty trzymasz w ręku w tajemnicy, najwyżej <b>${RULES.handLimit}</b>. Gdy masz więcej, od razu odrzuć nadmiar.</li>
+<li>Na karcie jest napisane, kiedy ją zagrać: w swojej turze, po rzucie (zanim ruszysz pionek), zamiast rzutu, gdy płacisz albo w obronie.</li>
+<li>Zagrana karta idzie na stos odrzuconych. Gdy talia się skończy, potasujcie odrzucone.</li></ul></section>
+<section><h2><span>7</span>Handel i bank</h2><p>W swojej turze możesz się wymieniać z każdym graczem: <b>miejsca bez budynków, surowce i szyszki</b>, w dowolnym układzie. Kart się nie wymienia.</p>
+<p><b>Bank:</b> ${RULES.bankTrade} jednakowe surowce wymienisz na 1 dowolny. Surowiec sprzedasz bankowi za ${RULES.sellRes} szyszkę.</p></section>
+<section><h2><span>8</span>Brak szyszek i bankructwo</h2><p>Nie masz czym zapłacić? Sprzedajesz bankowi: surowiec za ${RULES.sellRes} szyszkę, domek za ${RULES.sellCabin}, Dom za ${RULES.sellHouse}, miejsce za połowę ceny (w górę). Sprzedane miejsce znów jest wolne.</p>
+<p>Dalej brakuje? <b>Bankrutujesz</b>: oddajesz wierzycielowi wszystkie szyszki i odpadasz z gry. Twoje miejsca wracają do banku jako wolne, a karty na stos odrzuconych.</p></section>
+<section><h2><span>9</span>Koniec gry</h2><p>Wygrywa ten, kto pierwszy <b>w swojej turze</b> spełni cel z karty celu. Wygrywa też ostatni gracz, który nie zbankrutował.</p></section>
+</div>`
+
+const p3 = `<div class="wide"><section><h2>Pola specjalne</h2><table>${SPECIAL.map(([ic, name, text]) => `<tr><td style="width:11mm"><img src="${P(ic)}" alt=""></td><td style="width:34mm"><b>${name}</b></td><td>${text}</td></tr>`).join('')}</table></section>
+<section><h2>Żeton niewypału</h2><p>Karta Niewypał pozwala zakopać żeton na dowolnym miejscu. Pierwszy gracz (poza tym, kto go zakopał), który tam stanie, płaci zakopującemu ${RULES.saperzy} szyszki, traci następną kolejkę i nie wykonuje już tego pola. Żeton wraca do banku.</p></section>
+<section><h2>Wszystkie karty akcji (${total})</h2><div class="cards">${CARDS.map(c => `<div><b>${c.name}</b> <i>×${COPIES[c.rarity]} · ${WHEN[c.when].toLowerCase()}</i><br>${c.text}</div>`).join('')}</div></section></div>`
+
+const p4 = `<div class="cols">
+<section><h2>Co wydrukować</h2>
+<p><b>Plansza</b> (ploter): plik „Plansza 70x70 cm.pdf” w skali 100%. Najlepiej na grubszym papierze albo naklejona na piankę lub tekturę.</p>
+<p><b>Karty</b> (drukarka A4): plik „Karty A4.pdf” na sztywnym papierze 200-250 g, bez skalowania. Strony 1-10 to przody. Strona 11 to rewers kart akcji: wydrukuj ją na odwrocie stron 1-8. Wzór idzie przez całą kartkę, więc nie musi trafić co do milimetra. Tnij wzdłuż znaczników na brzegach.</p>
+<p><b>Żetony i budynki</b> (X1C): pliki z folderu „3D”. Każdy plik to jedna płyta w jednym kolorze, bez podpór. Razem ok. 11 godzin druku i 230 g filamentu.</p>
+<table><tr><th>Plik</th><th>Sztuk</th><th>Kolor</th></tr>
+<tr><td>Szyszki 1</td><td>${TOKENS.szyszka1}</td><td>brązowy</td></tr>
+<tr><td>Szyszki 5</td><td>${TOKENS.szyszka5}</td><td>biały albo srebrny</td></tr>
+<tr><td>Szyszki 10</td><td>${TOKENS.szyszka10}</td><td>żółty albo złoty</td></tr>
+<tr><td>Drewno</td><td>${TOKENS.drewno}</td><td>brązowy</td></tr>
+<tr><td>Piasek</td><td>${TOKENS.piasek}</td><td>żółty</td></tr>
+<tr><td>Ryby</td><td>${TOKENS.ryby}</td><td>niebieski</td></tr>
+<tr><td>Domki</td><td>${TOKENS.domek}</td><td>ciemny brąz albo czarny</td></tr>
+<tr><td>Domy</td><td>${TOKENS.dom}</td><td>szary albo biały</td></tr>
+<tr><td>Niewypały</td><td>${TOKENS.niewypal}</td><td>zielony albo czarny</td></tr></table>
+<p><b>Szyszki</b> to pieniądze: mała = 1, średnia = 5, duża = 10.</p>
+<p><b>Pionki:</b> siedem pionków z projektu Pionki (Jurek, Rysio, Tata, Dropsik, koparka, Tesla, X1C).</p>
+<p><b>Kostki:</b> dwie zwykłe kostki z domu.</p></section>
+<section><h2>Jak grać mądrze</h2><ul>
+<li><b>Patrz, co daje miejsce.</b> Na domek trzeba drewna i piasku, na Dom jeszcze ryb. Kto ma same sosny, tonie w drewnie i musi się wymieniać.</li>
+<li><b>Zbiory rosną z każdym miejscem.</b> Tanie miejsca też pracują: każde daje surowiec przy Śniadaniu.</li>
+<li><b>Chroń to, czego potrzebujesz.</b> Miejsce bez domku można Ci wykupić albo zabrać Ośmiornicą.</li>
+<li><b>Ryby to karty.</b> Jedna ryba to jedna karta, a karty potrafią odwrócić grę.</li>
+<li><b>Handluj.</b> Dwie osoby, które wymienią się brakującymi miejscami, wyprzedzają resztę stołu.</li>
+<li><b>Pilnuj lidera.</b> Major zdejmuje domek, a bez domku na każdym miejscu nie ma imperium.</li></ul></section>
+<section><h2>Najczęstsze pytania</h2>
+<p><b>Czy muszę kupić wolne miejsce?</b> Nie. Zostaje wolne dla następnych.</p>
+<p><b>Czy mogę wykupić miejsce z domkiem?</b> Nie, budynek chroni miejsce.</p>
+<p><b>Czy Major może zdjąć Dom?</b> Nie, tylko domek.</p>
+<p><b>Co, gdy Ośmiornica zabierze mi miejsce z grupy?</b> Tracisz całą grupę, a opłaty wracają do zwykłych. Domki na pozostałych miejscach zostają.</p>
+<p><b>Czy Dom może zostać, gdy stracę grupę?</b> Tak, raz postawiony Dom stoi.</p>
+<p><b>Co, gdy w banku zabraknie żetonów?</b> Bank jest bez dna. Zapiszcie brakujące na kartce albo użyjcie czegokolwiek.</p>
+<p><b>Dublet na kostkach?</b> Nic specjalnego. Liczy się suma.</p>
+<p><b>Czy po Helikopterze dostaję szyszki za Śniadanie?</b> Tylko gdy na nim wylądujesz, i wtedy też zbiory.</p></section>
+<section><div class="box tip"><p><b>Chcecie krócej albo dłużej?</b> Długość ustawia karta celu. Gdy czas goni, umówcie się na koniec o konkretnej godzinie: wygrywa wtedy ten, kto ma najwięcej budynków, a przy remisie najwięcej szyszek.</p></div></section>
+</div>`
+document.body.insertAdjacentHTML('afterbegin', page(1, p1) + page(2, p2) + page(3, p3) + page(4, p4))
+await Promise.all([...document.images].map(im => im.decode().catch(() => {})))
+window.ready = true
+</script>
+</body>
+</html>

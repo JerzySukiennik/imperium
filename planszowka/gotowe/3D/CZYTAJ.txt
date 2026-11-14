@@ -1,0 +1,17 @@
+IMPERIUM GZOWIAŃSKIE, żetony i budynki do druku 3D (wersja 1.0)
+
+Każdy plik .3mf to jedna płyta w jednym kolorze, z ustawieniami w środku: warstwa 0,2 mm, 3 ścianki, wypełnienie 15%, bez podpór i bez brimu, dysza 0,4 mm, PLA.
+Otwórz w Bambu Studio, wybierz filament i drukuj. Liczby poniżej to prawdziwy wynik cięcia w Bambu Studio.
+
+Szyszki 1.3mf: 40 szt., 12 x 11 x 13 mm, kolor brązowy, czas 1h 45m 57s, filament 28 g
+Szyszki 5.3mf: 24 szt., 16 x 15 x 17 mm, kolor biały albo srebrny, czas 1h 51m 44s, filament 34 g
+Szyszki 10.3mf: 12 szt., 20 x 19 x 21 mm, kolor żółty albo złoty, czas 1h 44m 34s, filament 32 g
+Drewno.3mf: 24 szt., 22 x 9 x 9 mm, kolor brązowy, czas 1h 14m 0s, filament 29 g
+Piasek.3mf: 20 szt., 19 x 17 x 8 mm, kolor żółty, czas 46m 39s, filament 17 g
+Ryby.3mf: 20 szt., 23 x 14 x 4 mm, kolor niebieski, czas 54m 9s, filament 15 g
+Domki.3mf: 16 szt., 17 x 14 x 13 mm, kolor ciemny brąz albo czarny, czas 1h 8m 24s, filament 27 g
+Domy.3mf: 10 szt., 26 x 20 x 18 mm, kolor szary albo biały, czas 1h 30m 52s, filament 43 g
+Niewypały.3mf: 2 szt., 19 x 19 x 16 mm, kolor zielony albo czarny, czas 14m 51s, filament 3 g
+
+Szyszki to pieniądze: mała = 1, średnia = 5, duża = 10. Najłatwiej je odróżnić, drukując każdą wielkość w innym kolorze.
+Wszystko ma płaski spód i żadnych nawisów, więc nic nie wymaga podpór. Skalowanie w górę jest bezpieczne, w dół do ok. 80%.

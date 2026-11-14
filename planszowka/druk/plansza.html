@@ -1,0 +1,89 @@
+<!doctype html>
+<!-- Imperium Gzowianskie board game: the 700 x 700 mm board for a plotter, built from gra.mjs. -->
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Imperium Gzowiańskie: plansza</title>
+<style>
+@page{size:700mm 700mm;margin:0}
+:root{--ink:#2a1a12;--cream:#fff6e6;--soft:#f6e3c2;--mute:#8a6a52;--font:ui-rounded,"SF Pro Rounded",-apple-system,"Helvetica Neue",Arial,sans-serif}
+*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+html,body{margin:0;padding:0;background:#fff}
+#board{position:relative;width:700mm;height:700mm;background:var(--cream);font-family:var(--font);color:var(--ink);overflow:hidden}
+#mid{position:absolute;left:100mm;top:100mm;width:500mm;height:500mm;background:radial-gradient(circle at 50% 46%,#fff3d6 0,#ffe2ae 62%,#ffd294 100%);overflow:hidden}
+#mid img.plot{position:absolute;left:8mm;top:86mm;width:484mm}
+#mid h1{position:absolute;left:0;right:0;top:15mm;margin:0;text-align:center;font-size:30mm;line-height:1;font-weight:900;letter-spacing:-.6mm}
+#mid h2{position:absolute;left:0;right:0;top:50mm;margin:0;text-align:center;font-size:7.4mm;font-weight:700;color:var(--mute);letter-spacing:.9mm;text-transform:uppercase}
+.note{position:absolute;background:rgba(255,246,230,.94);border:.7mm solid var(--ink);border-radius:5mm;padding:5mm 6mm;font-size:5.2mm;line-height:1.34;font-weight:600}
+.note h3{margin:0 0 2mm;font-size:4.4mm;letter-spacing:.5mm;text-transform:uppercase;color:var(--mute);font-weight:800}
+.note b{font-weight:900}
+.note .row{display:flex;align-items:center;gap:1.6mm;margin:1.1mm 0;white-space:nowrap}
+.note .row img{width:9.5mm;height:9.5mm;flex:none}
+.note .row i{font-style:normal;font-weight:900;font-size:6mm}
+.deck{position:absolute;width:65mm;height:90mm;border:.9mm dashed var(--ink);border-radius:4.5mm;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2mm;font-weight:800;font-size:5.4mm;color:var(--mute);background:rgba(255,246,230,.7)}
+.deck img{width:26mm;opacity:.85}
+.f{position:absolute;width:100mm;height:100mm;border:.6mm solid var(--ink);background:var(--cream);overflow:hidden}
+.f .band{position:absolute;left:0;top:0;right:0;height:25mm;border-bottom:.6mm solid var(--ink);display:flex;align-items:center;justify-content:center;text-align:center;font-weight:900;font-size:9.6mm;line-height:1;letter-spacing:-.15mm;padding:0 3mm}
+.f .band.long{font-size:8.2mm}
+.f .res{position:absolute;left:5mm;top:30mm;width:44mm;height:44mm}
+.f .gives{position:absolute;left:5mm;top:75.5mm;width:44mm;text-align:center;font-size:4.2mm;font-weight:800;color:var(--mute);text-transform:uppercase;letter-spacing:.4mm}
+.f .nums{position:absolute;right:6mm;top:31mm;width:42mm;text-align:right}
+.f .nums small{display:block;font-size:4mm;font-weight:800;letter-spacing:.5mm;text-transform:uppercase;color:var(--mute);margin-bottom:-.6mm}
+.f .nums .price{display:flex;align-items:center;justify-content:flex-end;gap:1mm;font-size:21mm;font-weight:900;line-height:1;margin-bottom:3.6mm}
+.f .nums .price img{width:13mm;height:13mm}
+.f .nums .fee{font-size:12.5mm;font-weight:900;line-height:1}
+.f .lore{position:absolute;left:4mm;right:4mm;bottom:3.2mm;text-align:center;font-size:3.5mm;line-height:1.2;font-weight:600;color:var(--mute)}
+.f.sp{background:var(--soft)}
+.f.sp .band{background:var(--ink);color:#fff}
+.f.sp .pic{position:absolute;left:21mm;top:26.5mm;width:58mm;height:58mm}
+.f.sp .rule{position:absolute;left:4mm;right:4mm;bottom:3.4mm;text-align:center;font-size:4.5mm;line-height:1.16;font-weight:800}
+.f.start{background:#ffe08a}
+.f.start .rule{bottom:3mm}
+.f.start .go{position:absolute;right:4mm;top:29mm;font-size:6mm;font-weight:900;letter-spacing:.3mm}
+#frame{position:absolute;inset:0;border:1.2mm solid var(--ink);pointer-events:none}
+</style>
+</head>
+<body>
+<div id="board"></div>
+<script type="module">
+import { FIELDS, GROUPS, RES, RULES, MODES } from '../gra.mjs'
+const LIGHT = new Set(['woda', 'okolica'])
+const ICON = n => `../art/ikony/${n}.png`
+const RULE = {
+  start: `Mijasz: ${RULES.salary} szyszki i zbiory. Stajesz tutaj: jeszcze ${RULES.startExact}.`,
+  moya: 'Dobierz kartę za darmo.',
+  niewypal: `Zapłać ${RULES.saperzy} szyszki saperom albo strać następną kolejkę.`,
+  koparka: `Weź ${RULES.koparka} dowolne surowce.`,
+  heli: 'Leć na dowolne pole i je wykonaj.',
+  wojt: `Podatek: ${RULES.wojtPerPlace} szyszka za każde Twoje miejsce.`,
+  rakieta: `Rzuć kostką. 1: płacisz ${-RULES.rakieta[0]}. Inaczej bierzesz tyle szyszek.`,
+  grad: `Zapłać ${RULES.gradCabin} szyszki za każdy swój domek i ${RULES.gradHouse} za Dom.`,
+}
+const cell = i => { const side = Math.floor(i / 6), k = i % 6; return side === 0 ? [6 - k, 6, 0] : side === 1 ? [0, 6 - k, 90] : side === 2 ? [k, 0, 180] : [6, k, 270] }
+const board = document.getElementById('board')
+let html = `<div id="mid"><img class="plot" src="../art/dzialka.png" alt=""><h1>Imperium Gzowiańskie</h1><h2>Gzowo 34 nad Narwią</h2>
+<div class="note" style="left:12mm;top:72mm;width:132mm"><h3>Twoja tura</h3><b>1.</b> Karta za rybę, handel, budowa.<br><b>2.</b> Rzut dwiema kostkami i ruch.<br><b>3.</b> Wykonaj pole.<br><b>4.</b> Handel i budowa.</div>
+<div class="note" style="right:12mm;top:72mm;width:116mm"><h3>Opłata za wejście</h3>Samo miejsce: liczba z pola.<br>Cała grupa: <b>×${RULES.feeGroup}</b><br>Domek: <b>×${RULES.feeCabin}</b> &nbsp; Dom: <b>×${RULES.feeHouse}</b></div>
+<div class="note" style="left:12mm;bottom:12mm;width:168mm"><h3>Budowa i bank</h3>
+<div class="row"><img src="${ICON('domek')}"><b>Domek</b> = <i>${RULES.cabin.drewno}</i><img src="${ICON('drewno')}"><i>${RULES.cabin.piasek}</i><img src="${ICON('piasek')}"></div>
+<div class="row"><img src="${ICON('dom')}"><b>Dom</b> = domek + <i>${RULES.house.drewno}</i><img src="${ICON('drewno')}"><i>${RULES.house.piasek}</i><img src="${ICON('piasek')}"><i>${RULES.house.ryby}</i><img src="${ICON('ryby')}"></div>
+<div class="row"><img src="${ICON('karta')}"><b>Karta</b> = <i>1</i><img src="${ICON('ryby')}"> raz na turę</div>
+<div class="row"><b>Bank:</b> ${RULES.bankTrade} jednakowe surowce → 1 dowolny</div>
+<div class="row"><b>Szyszki:</b> mała 1, średnia 5, duża 10</div></div>
+<div class="deck" style="right:84mm;bottom:12mm"><img src="${ICON('karta')}">Karty</div>
+<div class="deck" style="right:12mm;bottom:12mm">Odrzucone</div></div>`
+FIELDS.forEach((f, i) => {
+  const [c, r, rot] = cell(i), pos = `left:${c * 100}mm;top:${r * 100}mm;transform:rotate(${rot}deg)`
+  if (f.type === 'place') {
+    const g = GROUPS[f.group]
+    html += `<div class="f" style="${pos}"><div class="band${f.name.length > 10 ? ' long' : ''}" style="background:${g.color};color:${LIGHT.has(f.group) ? '#fff' : 'var(--ink)'}">${f.name}</div><img class="res" src="${ICON(f.res)}" alt=""><div class="gives">daje ${RES[f.res].name.toLowerCase()}</div><div class="nums"><small>Cena</small><div class="price">${f.price}<img src="${ICON('szyszka')}" alt=""></div><small>Opłata</small><div class="fee">${f.fee}</div></div><div class="lore">${f.lore}</div></div>`
+  } else {
+    html += `<div class="f sp${f.type === 'start' ? ' start' : ''}" style="${pos}"><div class="band${f.name.length > 10 ? ' long' : ''}">${f.name}</div><img class="pic" src="${ICON(f.type)}" alt="">${f.type === 'start' ? '<div class="go">← START</div>' : ''}<div class="rule">${RULE[f.type]}</div></div>`
+  }
+})
+board.innerHTML = html + '<div id="frame"></div>'
+await Promise.all([...document.images].map(im => im.decode().catch(() => {})))
+window.ready = true
+</script>
+</body>
+</html>

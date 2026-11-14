@@ -1,0 +1,98 @@
+<!doctype html>
+<!-- Imperium Gzowianskie board game: all cards on A4 sheets (9 per sheet, 63 x 88 mm), built from gra.mjs. Last page is the back for action cards. -->
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Imperium Gzowiańskie: karty</title>
+<style>
+@page{size:A4;margin:0}
+:root{--ink:#2a1a12;--cream:#fff6e6;--soft:#f6e3c2;--mute:#8a6a52;--font:ui-rounded,"SF Pro Rounded",-apple-system,"Helvetica Neue",Arial,sans-serif}
+*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+html,body{margin:0;padding:0;background:#fff;font-family:var(--font);color:var(--ink)}
+.sheet{position:relative;width:210mm;height:297mm;page-break-after:always;overflow:hidden}
+.sheet:last-child{page-break-after:auto}
+.grid{position:absolute;left:10.5mm;top:16.5mm;width:189mm;height:264mm;display:grid;grid-template-columns:repeat(3,63mm);grid-template-rows:repeat(3,88mm)}
+.mark{position:absolute;background:var(--ink)}
+.foot{position:absolute;left:10.5mm;right:10.5mm;top:5mm;font-size:2.8mm;font-weight:700;color:var(--mute);display:flex;justify-content:space-between}
+.c{position:relative;width:63mm;height:88mm;padding:3mm;background:var(--cream);outline:.15mm solid rgba(42,26,18,.35);outline-offset:-.075mm;overflow:hidden}
+.c.rzadka{background:#dcecff}
+.c.legendarna{background:linear-gradient(150deg,#ffe58a,#ffd0a8 55%,#ffe58a)}
+.c .ph{display:block;width:57mm;height:46mm;object-fit:cover;border-radius:2.4mm;border:.35mm solid var(--ink);background:var(--soft)}
+.c h4{margin:1.9mm 0 0;font-size:5.1mm;line-height:1;font-weight:900;letter-spacing:-.1mm}
+.c .tags{display:flex;gap:1.2mm;margin:1.3mm 0 1.4mm;font-size:2.15mm;font-weight:800;letter-spacing:.25mm;text-transform:uppercase}
+.c .tags span{padding:.55mm 1.5mm;border-radius:1.6mm;background:var(--ink);color:#fff}
+.c .tags span.r{background:transparent;color:var(--mute);padding-left:0}
+.c.rzadka .tags span.r{color:#2f6fd6}
+.c.legendarna .tags span.r{color:#b0541a}
+.c .tx{height:23mm;font-size:3.25mm;line-height:1.22;font-weight:600;overflow:hidden}
+.c .sig{position:absolute;left:3mm;right:3mm;bottom:1.7mm;font-size:1.9mm;font-weight:800;letter-spacing:.3mm;text-transform:uppercase;color:var(--mute);display:flex;justify-content:space-between}
+.c.blank .ph{background:repeating-linear-gradient(45deg,#fff,#fff 2mm,var(--soft) 2mm,var(--soft) 2.3mm)}
+.c.blank .ln{height:5.4mm;border-bottom:.25mm solid rgba(42,26,18,.4)}
+.d{padding:0}
+.d .band{height:17mm;display:flex;flex-direction:column;align-items:center;justify-content:center;border-bottom:.4mm solid var(--ink)}
+.d .band small{font-size:2.1mm;font-weight:800;letter-spacing:.4mm;text-transform:uppercase;opacity:.8}
+.d .band b{font-size:6.2mm;font-weight:900;line-height:1.05;letter-spacing:-.1mm}
+.d .top{display:flex;align-items:center;gap:2.4mm;padding:1.8mm 4mm .4mm}
+.d .top img{width:18mm;height:18mm;flex:none}
+.d .top div{font-size:3.2mm;font-weight:700;line-height:1.3}
+.d .top div b{font-weight:900}
+.d .top .pr{display:flex;align-items:center;gap:.6mm;font-size:8.6mm;font-weight:900;line-height:1}
+.d .top .pr img{width:6.4mm;height:6.4mm}
+.d table{width:55mm;margin:.8mm 4mm 0;border-collapse:collapse;font-size:3.5mm;font-weight:700}
+.d td{padding:.85mm 0;border-top:.25mm solid rgba(42,26,18,.25)}
+.d td:last-child{text-align:right;font-weight:900;font-size:4.6mm}
+.d caption{caption-side:top;text-align:left;font-size:2.2mm;font-weight:800;letter-spacing:.4mm;text-transform:uppercase;color:var(--mute);padding-bottom:.6mm}
+.d .grp{position:absolute;left:4mm;right:4mm;bottom:1.8mm;height:8.2mm;font-size:2.5mm;line-height:1.3;font-weight:700;color:var(--mute);border-top:.25mm solid rgba(42,26,18,.25);padding-top:.8mm;overflow:hidden}
+.h{padding:3.2mm 3.6mm;background:#fff}
+.h h4{font-size:4.4mm;margin:0 0 .6mm}
+.h h5{margin:1.5mm 0 .4mm;font-size:2.3mm;font-weight:800;letter-spacing:.4mm;text-transform:uppercase;color:var(--mute)}
+.h p{margin:0;font-size:2.66mm;line-height:1.17;font-weight:600}
+.h p b{font-weight:900}
+.h .box{height:81mm;overflow:hidden}
+.g{padding:5mm 4.5mm;display:flex;flex-direction:column;background:#ffe08a}
+.g small{font-size:2.4mm;font-weight:800;letter-spacing:.5mm;text-transform:uppercase;color:var(--mute)}
+.g h4{font-size:8mm;margin:1.5mm 0 1mm;line-height:.98}
+.g .time{font-size:3.6mm;font-weight:800;margin-bottom:3.4mm}
+.g img{width:30mm;height:30mm;align-self:center;margin:1mm 0 3mm}
+.g p{margin:0 0 2mm;font-size:3.5mm;line-height:1.24;font-weight:700}
+.g p.s{font-size:2.9mm;font-weight:600;color:#5b4233}
+.back{position:absolute;inset:0;background-color:var(--ink);background-image:url(../art/ikony/szyszka.png),url(../art/ikony/szyszka.png);background-size:21mm 21mm,21mm 21mm;background-position:0 0,10.5mm 10.5mm;background-repeat:repeat}
+.back::after{content:"";position:absolute;inset:0;background:rgba(42,26,18,.55)}
+</style>
+</head>
+<body>
+<script type="module">
+import { FIELDS, GROUPS, RES, RULES, MODES, CARDS, COPIES, RARITY, WHEN, feeOf, groupFields } from '../gra.mjs'
+const LIGHT = new Set(['woda', 'okolica'])
+const ICON = n => `../art/ikony/${n}.png`
+const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]))
+const action = c => `<div class="c ${c.rarity}"><img class="ph" src="../foto/${c.id}.jpg" alt=""><h4>${esc(c.name)}</h4><div class="tags"><span class="r">${RARITY[c.rarity]}</span><span>${WHEN[c.when]}</span></div><div class="tx" data-fit="${c.id}">${esc(c.text)}</div><div class="sig"><span>Imperium Gzowiańskie</span><span>karta</span></div></div>`
+const blank = () => `<div class="c blank"><div class="ph"></div><h4>&nbsp;</h4><div class="tags"><span class="r">Twoja karta</span></div><div class="tx"><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div></div><div class="sig"><span>Imperium Gzowiańskie</span><span>karta</span></div></div>`
+const deed = (f, i) => {
+  const g = GROUPS[f.group], mates = groupFields(f.group).map(j => FIELDS[j].name).join(', ')
+  return `<div class="c d"><div class="band" style="background:${g.color};color:${LIGHT.has(f.group) ? '#fff' : 'var(--ink)'}"><small>Akt własności · ${esc(g.name)}</small><b>${esc(f.name)}</b></div>
+<div class="top"><img src="${ICON(f.res)}" alt=""><div>Daje: <b>${RES[f.res].name.toLowerCase()}</b><div class="pr">${f.price}<img src="${ICON('szyszka')}" alt=""></div>cena miejsca</div></div>
+<table><caption>Opłata za wejście</caption><tr><td>Samo miejsce</td><td>${feeOf(f, 0, false)}</td></tr><tr><td>Cała grupa</td><td>${feeOf(f, 0, true)}</td></tr><tr><td>Z domkiem</td><td>${feeOf(f, 1, true)}</td></tr><tr><td>Z Domem</td><td>${feeOf(f, 2, true)}</td></tr></table>
+<div class="grp" data-fit="akt-${f.id}">Grupa: ${esc(mates)}.<br>Wykup: ${f.price * RULES.buyout} · Bank odkupi za ${Math.ceil(f.price / 2)}</div></div>`
+}
+const help = () => `<div class="c h"><div class="box" data-fit="sciaga"><h4>Ściąga</h4>
+<h5>Twoja tura</h5><p><b>1.</b> Karta za 1 rybę, handel, budowa.<br><b>2.</b> Rzut dwiema kostkami i ruch.<br><b>3.</b> Wykonaj pole.<br><b>4.</b> Handel i budowa.<br>W turze zagrasz jedną kartę z ręki.</p>
+<h5>Miejsca</h5><p><b>Wolne:</b> możesz kupić. Bierzesz akt i 1 surowiec.<br><b>Twoje:</b> bierzesz ${RULES.ownLanding} surowce tego miejsca.<br><b>Cudze:</b> płacisz opłatę. Bez budynku możesz je potem wykupić za podwójną cenę.</p>
+<h5>Śniadanie</h5><p>Mijasz: ${RULES.salary} szyszki i po 1 surowcu z każdego swojego miejsca.</p>
+<h5>Budowa</h5><p><b>Domek:</b> ${RULES.cabin.drewno} drewna, ${RULES.cabin.piasek} piasek.<br><b>Dom:</b> zamiast domku, w całej grupie: ${RULES.house.drewno} drewno, ${RULES.house.piasek} piaski, ${RULES.house.ryby} ryby.</p>
+<h5>Bank</h5><p>${RULES.bankTrade} jednakowe surowce za 1 dowolny. Surowiec sprzedasz za ${RULES.sellRes} szyszkę.</p></div></div>`
+const goal = m => `<div class="c g"><small>Cel gry · ${esc(m.time)}</small><h4>${esc(m.name)}</h4><img src="${ICON(m.houses ? 'dom' : 'domek')}" alt=""><p>Wygrywa pierwszy, kto zbuduje:</p><p>${esc(m.goal)}</p><p class="s">${m.deal ? `Na start każdy dostaje ${m.deal} losowe akty własności (z różnych grup) i po 1 surowcu z każdego.` : 'Na start nikt nie ma żadnego miejsca.'}</p></div>`
+
+const fronts = [...CARDS.flatMap(c => Array(COPIES[c.rarity]).fill(action(c))), blank(), ...Array(4).fill(help()), ...Object.values(MODES).map(goal), ...FIELDS.map((f, i) => [f, i]).filter(([f]) => f.type === 'place').map(([f, i]) => deed(f, i))]
+const marks = () => { let m = ''; for (let k = 0; k <= 3; k++) { const x = 10.5 + k * 63, y = 16.5 + k * 88; m += `<i class="mark" style="left:${x - .075}mm;top:9mm;width:.15mm;height:6mm"></i><i class="mark" style="left:${x - .075}mm;top:282mm;width:.15mm;height:6mm"></i><i class="mark" style="top:${y - .075}mm;left:3mm;height:.15mm;width:6mm"></i><i class="mark" style="top:${y - .075}mm;left:201mm;height:.15mm;width:6mm"></i>` } return m }
+let html = ''
+const pages = Math.ceil(fronts.length / 9)
+for (let p = 0; p < pages; p++) html += `<div class="sheet"><div class="foot"><span>Imperium Gzowiańskie · karty · strona ${p + 1} z ${pages + 1}</span><span>${p < 8 ? 'karty akcji: na odwrocie wydrukuj ostatnią stronę' : 'akty własności: odwrót pusty'}</span></div>${marks()}<div class="grid">${fronts.slice(p * 9, p * 9 + 9).join('')}</div></div>`
+html += `<div class="sheet"><div class="back"></div></div>`
+document.body.insertAdjacentHTML('afterbegin', html)
+window.cardCount = fronts.length
+await Promise.all([...document.images].map(im => im.decode().catch(() => {})))
+window.ready = true
+</script>
+</body>
+</html>
